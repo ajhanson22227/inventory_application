@@ -20,6 +20,9 @@ router.get('/item/:id', item_controller.item_detail);
 //GET request to list all categories
 router.get('/categories', category_controller.category_list)
 
+//GET request display category and it's contents
+router.get('/category/:id', category_controller.category_detail)
+
 
 
 

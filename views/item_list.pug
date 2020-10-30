@@ -4,11 +4,11 @@ block content
     h1= title
 
     ul
-    - item_list.sort(function(a, b) {let textA = a.name.toUpperCase(); let textB = b.name.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
-    each item in item_list
-      li 
-        a(href=item.url) #{item.name} 
-        p #{item.description}
+      - item_list.sort(function(a, b) {let textA = a.name.toUpperCase(); let textB = b.name.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
+      each item in item_list
+        li 
+          a(href=item.url) #{item.name} 
+          p #{item.description}
 
-    else
-      li There are no books.
+      else
+        li There are no books.
