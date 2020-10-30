@@ -1,0 +1,9 @@
+extends layout
+
+block content
+    h1 #{item.category.name}: #{title}
+    p #{item.description}
+    
+    each instance in item_instance
+        p $ #{instance.price}
+        p Currently #{instance.stock} in stock
