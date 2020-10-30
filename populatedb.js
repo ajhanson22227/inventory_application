@@ -13,6 +13,7 @@ if (!userArgs[0].startsWith('mongodb')) {
 var async = require('async')
 const Item = require('./models/item')
 const Category = require('./models/category')
+const ItemInstance = require('./models/iteminstance')
 
 
 var mongoose = require('mongoose');
@@ -24,15 +25,14 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 var items = []
 var categories = []
+var iteminstances = []
 
 
-function itemCreate(name, description, category, price, stock, cb){
+function itemCreate(name, description, category, cb){
     itemdetail = {
         name: name,
         description: description,
         category: category,
-        price: price,
-        stock: stock
     }
     var item = new Item(itemdetail);
     item.save(function(err){
@@ -59,6 +59,19 @@ function categoryCreate(name, description, cb){
     })
 }
 
+function iteminstanceCreate(item, price, stock, cb){
+    var iteminstance = new ItemInstance({item:item, price: price, stock:stock})
+    iteminstance.save(function(err){
+        if (err){
+            cb(err, null)
+            return
+        }
+        console.log('New Instance: ' + iteminstance)
+        iteminstances.push(iteminstance)
+        cb(null,iteminstance)
+    })
+}
+
 function createCategories(cb){
     async.parallel([
         function(callback){
@@ -80,29 +93,59 @@ function createCategories(cb){
 function createItems(cb){
     async.parallel([
         function(callback){
-            itemCreate('Tank Top', 'A Sleveless Shirt', categories[0], 6, 10, callback)
+            itemCreate('Tank Top', 'A Sleveless Shirt', categories[0], callback)
         },
         function(callback){
-            itemCreate('Long Sleeved', 'Covers Your Entire Arm', categories[0], 10, 11, callback)
+            itemCreate('Long Sleeved', 'Covers Your Entire Arm', categories[0], callback)
         },
         function(callback){
-            itemCreate('Jeans', 'Pants Made of Denim', categories[1], 14, 10, callback)
+            itemCreate('Jeans', 'Pants Made of Denim', categories[1], callback)
         },
         function(callback){
-            itemCreate('Shorts', 'Show Off Your Knees', categories[1], 12, 10, callback)
+            itemCreate('Shorts', 'Show Off Your Knees', categories[1], callback)
         },
         function(callback){
-            itemCreate('Sneakers', 'Helps You Sneak', categories[2], 25, 3, callback)
+            itemCreate('Sneakers', 'Helps You Sneak', categories[2], callback)
         },
         function(callback){
-            itemCreate('Heels', 'Grow A Couple Inches', categories[2], 20, 5, callback)
+            itemCreate('Heels', 'Grow A Couple Inches', categories[2], callback)
         },
         function(callback){
-            itemCreate('Scarf', 'Warms You Up In Winter', categories[3], 5, 20, callback)
+            itemCreate('Scarf', 'Warms You Up In Winter', categories[3], callback)
         },
         function(callback){
-            itemCreate('Belt', 'Keeps Your Pants From Falling', categories[3], 13, 8, callback)
+            itemCreate('Belt', 'Keeps Your Pants From Falling', categories[3], callback)
+        }
+    ],
+    cb)
+}
+
+function createIteminstances(cb){
+    async.parallel([
+        function(callback){
+            iteminstanceCreate(items[0], 6, 10, callback)
         },
+        function(callback){
+            iteminstanceCreate(items[1], 10, 11, callback)
+        },
+        function(callback){
+            iteminstanceCreate(items[2], 14, 10, callback)
+        },
+        function(callback){
+            iteminstanceCreate(items[3], 12, 10, callback)
+        },
+        function(callback){
+            iteminstanceCreate(items[4], 25, 3, callback)
+        },
+        function(callback){
+            iteminstanceCreate(items[5], 20, 5, callback)
+        },
+        function(callback){
+            iteminstanceCreate(items[6], 5, 20, callback)
+        },
+        function(callback){
+            iteminstanceCreate(items[7], 13, 8, callback)
+        }
     ],
     cb)
 }
@@ -110,7 +153,8 @@ function createItems(cb){
 
 async.series([
     createCategories,
-    createItems
+    createItems,
+    createIteminstances
 ],
 // Optional callback
 function(err, results) {
