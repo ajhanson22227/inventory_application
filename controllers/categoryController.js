@@ -34,3 +34,31 @@ exports.category_detail = function(req, res, next){
         res.render('category_detail', { title: results.category.name, items: results.items })
     })
 }
+
+exports.category_create_get = function(req, res, next){
+    res.render('category_form', {title: 'Create Category'})
+}
+
+exports.category_create_post = [
+    body('name').trim().isLength({min: 1}).escape().withMessage('Name is Required'),
+    body('description').trim().isLength({min: 1}).escape().withMessage('Category is Required'),
+
+    (req, res, next) => {
+        const errors = validationResult(req)
+        if (!errors.isEmpty()){
+            res.render('category_form', {title: 'Create Category', category: req.body, errors: errors.array()})
+            return
+        }
+        else{
+            const category = new Category({
+                name: req.body.name,
+                description: req.body.description
+            });
+            category.save(function(err){
+                if (err) { return next(err)}
+                res.redirect(category.url)
+            })
+        }
+    }
+    
+]
