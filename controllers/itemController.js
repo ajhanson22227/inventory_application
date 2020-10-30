@@ -1,6 +1,5 @@
 const Item = require('../models/item');
 const Category = require('../models/category');
-const ItemInstance = require('../models/iteminstance');
 const { body, validationResult } = require('express-validator');
 const async = require('async');
 
@@ -33,10 +32,7 @@ exports.item_detail = function(req, res, next){
             .populate('category')
             .exec(callback)
         },
-        item_instance: function(callback){
-            ItemInstance.find({'item': req.params.id})
-            .exec(callback)
-        }
+
     },function(err, results){
         if (err) { return next(err)}
         if (results.item === null){
@@ -44,6 +40,6 @@ exports.item_detail = function(req, res, next){
             err.status = 404
             return next(err)
         }
-        res.render('item_detail', { title: results.item.name, item: results.item, item_instance: results.item_instance})
+        res.render('item_detail', { title: results.item.name, item: results.item})
     })
 }

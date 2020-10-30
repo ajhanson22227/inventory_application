@@ -1,6 +1,5 @@
 const Item = require('../models/item');
 const Category = require('../models/category');
-const ItemInstance = require('../models/iteminstance');
 const { body, validationResult } = require('express-validator');
 const async = require('async');
 const category = require('../models/category');
