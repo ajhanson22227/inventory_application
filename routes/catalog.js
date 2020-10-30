@@ -3,7 +3,7 @@ const router = express.Router();
 
 //Require controller modules
 const item_controller = require('../controllers/itemController');
-//const category_controller = require('../controllers/categoryController');
+const category_controller = require('../controllers/categoryController');
 
 // ITEM ROUTES
 router.get('/', item_controller.index);
@@ -17,6 +17,8 @@ router.get('/item/:id', item_controller.item_detail);
 
 // CATEGORY ROUTES
 
+//GET request to list all categories
+router.get('/categories', category_controller.category_list)
 
 
 

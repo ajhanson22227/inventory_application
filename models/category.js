@@ -16,11 +16,6 @@ CategorySchema
   return '/catalog/category/' + this._id;
 });
 
-CategorySchema
-.virtual('cat')
-.get(function(){
-  return this.name;
-})
 
 //Export model
 module.exports = mongoose.model('Category', CategorySchema);
