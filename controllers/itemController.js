@@ -18,11 +18,10 @@ exports.index = function(req, res){
 
 exports.item_list = function(req, res, next){
 
-    Item.find({}, 'name')
-    .populate('name')
+    Item.find({}, 'name description')
     .exec(function(err, list_items){
         if (err) {return next(err)}
-        res.render('item_list', {title: 'Hellooo'})
+        res.render('item_list', {title: 'Item List', item_list: list_items})
     })
 
 }
