@@ -1,0 +1,20 @@
+extends layout
+
+block content
+    h1 #{title}: #{category.name}
+    
+    if items.length
+        p #[strong Cannot delete a category with items]
+        h4 items
+        div
+            dl
+            each item in items
+                a(href=item.url) #{item.name}
+                br
+    else
+        p Do you really want to delete this Category?
+
+        form(method='POST' action='')
+            div
+                input(type='hidden' require='true' name='categoryid' value=category._id)
+            button(type='submit') Delete

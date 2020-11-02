@@ -43,3 +43,61 @@ exports.item_detail = function(req, res, next){
         res.render('item_detail', { title: results.item.name, item: results.item})
     })
 }
+
+exports.item_create_get = function(req, res, next){
+    Category.find({}, 'name')
+    .exec(function(err, categories){
+        if (err) { return next(err)}
+        res.render('item_form', {title: 'Create Item', categories: categories})
+    })
+}
+
+exports.item_create_post = [
+    body('name', 'Name Must Not Be Empty').trim().isLength({min:1}).escape(),
+    body('description', 'Description Must Not Be Empty').trim().isLength({min:1}).escape(),
+    body('price').escape(),
+    body('stock').escape(),
+    body('category').escape(),
+
+    (req, res, next) => {
+        const errors = validationResult(req);
+
+        const item = new Item({
+            name: req.body.name,
+            description: req.body.description,
+            price: req.body.price,
+            stock: req.body.stock,
+            category: req.body.category
+        })
+        if (!errors.isEmpty()){
+            Category.find({}, 'name')
+            .exec(function(err, categories){
+                if (err) {return next(err)}
+                res.render('item_form', {title: 'Create Item', item: item, categories: categories})
+            })
+        }
+        else{
+            item.save(function(err){
+                if(err) {return next(err)}
+                res.redirect(item.url)
+            })
+        }
+    }   
+]
+
+exports.item_delete_get = function(req, res, next){
+    Item.findById(req.params.id)
+    .populate('category')
+    .exec(function(err, item){
+        if (err) { return next(err)}
+        if (item === null) { res.redirect('/catalog/items')}
+        res.render('item_delete', { title: 'Delete Item', item: item})
+    })
+}
+
+exports.item_delete_post = function(req, res, next){
+    Item.findByIdAndDelete(req.params.id, function deleteItem(err){
+        if (err)  { return next(err) }
+        res.redirect('/catalog/items')
+    })
+}

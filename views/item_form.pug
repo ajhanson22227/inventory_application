@@ -1,0 +1,33 @@
+extends layout
+
+block content
+    h1= title
+
+    form(method='POST' action='')
+        div
+            label(for='name') Item Name:
+            input(type='text' placeholder='Shorts' name='name' required='true' value=(undefined===item ? '' : item.name))
+        div
+            label(for='description') Item Description:
+            input(type='text' placeholder='Shorts are comfy and easy to wear' name='description' required='true' value=(undefined === item ? '' : item.description))
+        div
+            label(for='price') Item Price:
+            input(type='number' name='price' required='true' value=(undefined===item ? 0 : item.price))
+        div
+            label(for='stock') Items in Stock:
+            input(type='number' name='stock' required='true' value=(undefined===item ? 0 : item.stock))
+        div
+            label(for='category') Item Category:
+            select(type='select' placeholder='Select A Category' name='category' required='true')
+                - categories.sort(function(a,b){ let textA = a.name.toUpperCase(); let textB = b.name.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0})
+                for category in categories
+                    if item
+                        option(value=category._id selected=(category._id.toString()===item.category._id.toString() ? 'selected' : false) ) #{category.name}
+                    else
+                        option(value=category._id) #{category.name}
+        button(type='submit') Submit
+
+    if errors
+        ul
+            for error in errors
+                li!= error.msg

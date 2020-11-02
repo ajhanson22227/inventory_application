@@ -1,0 +1,13 @@
+extends layout
+
+block content
+
+    h1 #{title}: #{item.name}
+
+    p #[strong Category:] #{item.category.name}
+
+    form(method='POST' action='')
+        div
+            p Are you sure you want to delete?
+            input(type='hidden' name='id' required='true' value=item._id)
+        button(type='submit') Delete

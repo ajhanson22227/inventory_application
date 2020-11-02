@@ -30,7 +30,7 @@ exports.category_detail = function(req, res, next){
             err.status = 404
             return next(err)
         }
-        res.render('category_detail', { title: results.category.name, items: results.items })
+        res.render('category_detail', { title: results.category.name, items: results.items, category: results.category })
     })
 }
 
@@ -61,3 +61,41 @@ exports.category_create_post = [
     }
     
 ]
+
+exports.category_delete_get = function(req, res, next){
+    async.parallel({
+        category: function(callback){
+            Category.findById(req.params.id).exec(callback)
+        },
+        items: function(callback){
+            Item.find({'category': req.params.id}).exec(callback)
+        },
+    }, function(err, results){
+        if (err) { return next(err)}
+        if(results.category === null) { res.redirect('/catalog/categories')}
+        res.render('category_delete', { title: 'Delete Category', category: results.category, items: results.items})
+    })
+}
+
+exports.category_delete_post = function(req, res, next){
+    async.parallel({
+        category: function(callback){
+            Category.findById(req.params.id).exec(callback)
+        },
+        items: function(callback){
+            Item.find({'category': req.params.id}).exec(callback)
+        },
+    }, function(err, results){
+        if (err) { return next(err)}
+        if (results.items.length > 0){
+            res.render('category_delete', {title: 'Delete Category', category: results.category, items: results.items})
+            return
+        }
+        else{
+            Category.findByIdAndRemove(req.params.id, function deleteCategory(err){
+                if (err) {return next(err)}
+                res.redirect('/catalog/categories')
+            })
+        }
+    })
+}
