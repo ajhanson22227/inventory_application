@@ -101,3 +101,52 @@ exports.item_delete_post = function(req, res, next){
         res.redirect('/catalog/items')
     })
 }
+
+exports.item_update_get = function(req, res, next){
+    async.parallel({
+        item: function(callback){
+            Item.findById(req.params.id).exec(callback)
+        },
+        categories: function(callback){
+            Category.find({}, 'name').exec(callback)
+        },
+    }, function(err, results){
+        if (err) { return next(err)}
+        if (results.item === null) { res.redirect('/catlog/items')}
+        res.render('item_form', {title: 'Update Item', item: results.item, categories: results.categories})
+    })
+}
+
+exports.item_update_post = [
+    body('name', 'Name Must Not Be Empty').trim().isLength({min:1}).escape(),
+    body('description', 'Description Must Not Be Empty').trim().isLength({min:1}).escape(),
+    body('price').escape(),
+    body('stock').escape(),
+    body('category').escape(),
+
+    (req, res, next) => {
+        const errors = validationResult(req);
+
+        const item = new Item({
+            name: req.body.name,
+            description: req.body.description,
+            price: req.body.price,
+            stock: req.body.stock,
+            category: req.body.category,
+            _id: req.params.id
+        })
+        if (!errors.isEmpty()){
+            Category.find({}, 'name')
+            .exec(function(err, categories){
+                if (err) {return next(err)}
+                res.render('item_form', {title: 'Update Item', item: item, categories: categories})
+            })
+        }
+        else{
+            Item.findByIdAndUpdate(req.params.id, item, {}, function(err, theitem){
+                if (err) { return next(err)}
+                res.redirect(theitem.url)
+            })
+        }
+    }   
+]
